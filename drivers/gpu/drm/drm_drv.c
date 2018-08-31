@@ -94,8 +94,8 @@ void drm_printk(const char *level, unsigned int category,
 	struct va_format vaf;
 	va_list args;
 
-	if (category != DRM_UT_NONE && !(drm_debug & category))
-		return;
+	//if (category != DRM_UT_NONE && !(drm_debug & category))
+	//	return;
 
 	va_start(args, format);
 	vaf.fmt = format;
