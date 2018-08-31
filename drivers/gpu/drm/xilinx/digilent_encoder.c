@@ -108,8 +108,9 @@ static int digilent_encoder_get_modes(struct drm_encoder *encoder,
    
    if (digilent->i2c_present)
    {
+      DRM_INFO(" [debug] i2c_present\n");
       edid = drm_get_edid(connector, digilent->i2c_bus);
-
+      
       /*
        *Other drivers tend to call update edid property after the call to 
        *drm_add_edid_modes. If problems with modesetting, this could be why.
@@ -117,12 +118,14 @@ static int digilent_encoder_get_modes(struct drm_encoder *encoder,
       drm_mode_connector_update_edid_property(connector, edid);
       if (edid) 
       {
+	 DRM_INFO(" [debug] size: %d cm x %d cm\n", edid->width_cm, edid->height_cm);
          num_modes = drm_add_edid_modes(connector, edid);
          kfree(edid);
       }
    }
    else
    {
+      DRM_INFO(" [debug] NO i2c!t\n");
       num_modes = drm_add_modes_noedid(connector, digilent->hmax, digilent->vmax);
       drm_set_preferred_mode(connector, digilent->hpref, digilent->vpref);
    }   
