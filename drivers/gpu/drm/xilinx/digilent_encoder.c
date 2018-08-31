@@ -125,10 +125,11 @@ static int digilent_encoder_get_modes(struct drm_encoder *encoder,
    }
    else
    {
-      DRM_INFO(" [debug] NO i2c!t\n");
+      DRM_INFO(" [debug] NO i2c!\n");
       num_modes = drm_add_modes_noedid(connector, digilent->hmax, digilent->vmax);
       drm_set_preferred_mode(connector, digilent->hpref, digilent->vpref);
    }   
+	DRM_INFO(" [debug] number of modes: %d\n",num_modes);
 	return num_modes;
 }
 
