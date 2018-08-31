@@ -2256,8 +2256,10 @@ int drm_fb_helper_initial_config(struct drm_fb_helper *fb_helper, int bpp_sel)
 	/*
 	 * we shouldn't end up with no modes here.
 	 */
+	dev_info(fb_helper->dev->dev, " [debug] we shouldn't end up with no modes here... BUT WE DO!\n");
 	if (count == 0)
 		dev_info(fb_helper->dev->dev, "No connectors reported connected with modes\n");
+	else dev_info(fb_helper->dev->dev, " [debug] number of modes - %d\n", count);
 
 	drm_setup_crtcs(fb_helper);
 
