@@ -209,13 +209,15 @@ static int digilent_encoder_encoder_init(struct platform_device *pdev,
 		if (!(digilent->i2c_present))
 			DRM_INFO("No pref horizontal width in DT, using default %d\n", DIGILENT_ENC_PREF_H);
 	}
+	else DRM_INFO(" [debug] pref horizontal width in DT %d\n", digilent->hpref);
 
 	ret = of_property_read_u32(pdev->dev.of_node, "digilent,vpref", &digilent->vpref);
 	if (ret < 0) {
       digilent->vpref = DIGILENT_ENC_PREF_V;
 		if (!(digilent->i2c_present))
-			DRM_INFO("No pref horizontal width in DT, using default %d\n", DIGILENT_ENC_PREF_V);
+			DRM_INFO("No pref horizontal height in DT, using default %d\n", DIGILENT_ENC_PREF_V);
 	}
+	else DRM_INFO(" [debug] pref horizontal height in DT %d\n", digilent->vpref);
 
 	return 0;
 }
