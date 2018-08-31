@@ -307,6 +307,7 @@ int drm_helper_probe_single_connector_modes(struct drm_connector *connector,
 	if (connector->stereo_allowed)
 		mode_flags |= DRM_MODE_FLAG_3D_MASK;
 
+	int ci=0;
 	list_for_each_entry(mode, &connector->modes, head) {
 		if (mode->status == MODE_OK)
 			mode->status = drm_mode_validate_basic(mode);
@@ -320,6 +321,13 @@ int drm_helper_probe_single_connector_modes(struct drm_connector *connector,
 		if (mode->status == MODE_OK && connector_funcs->mode_valid)
 			mode->status = connector_funcs->mode_valid(connector,
 								   mode);
+		DRM_DEBUG(" [debug][CONNECTOR:%d:%s] %d, %d x %d, crtc %d x %d\n",
+			      connector->base.id,
+			      connector->name, ci++,
+			      mode->hdisplay,
+			      mode->vdisplay,
+			      mode->crtc_hdisplay,
+			      mode->crtc_vdisplay);
 	}
 
 prune:
