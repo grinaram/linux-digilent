@@ -279,6 +279,9 @@ static void xilinx_vtc_config_polarity(struct xilinx_vtc *vtc,
 		reg |= VTC_CTL_HSP;
 
 	xilinx_drm_writel(vtc->base, VTC_GPOL, reg);
+	
+	u32 reg2 = xilinx_drm_readl(vtc->base, VTC_GPOL);//
+	DRM_DEBUG_DRIVER("GPOL: 0x%08x\n", reg2);//
 }
 
 /* configure horizontal offset */
@@ -292,11 +295,16 @@ xilinx_vtc_config_hori_offset(struct xilinx_vtc *vtc,
 	reg |= (hori_offset->vblank_hori_end << VTC_XVXHOX_HEND_SHIFT) &
 	       VTC_XVXHOX_HEND_MASK;
 	xilinx_drm_writel(vtc->base, VTC_GVBHOFF, reg);
+	
+	u32 reg2 = xilinx_drm_readl(vtc->base, VTC_GVBHOFF);//
+	DRM_DEBUG_DRIVER("GVBHOFF: %d, %d\n", reg2 & 0xffff, (reg2 >> 16) & 0xffff);//
 
 	reg = hori_offset->vsync_hori_start & VTC_XVXHOX_HSTART_MASK;
 	reg |= (hori_offset->vsync_hori_end << VTC_XVXHOX_HEND_SHIFT) &
 	       VTC_XVXHOX_HEND_MASK;
 	xilinx_drm_writel(vtc->base, VTC_GVSHOFF, reg);
+	reg2 = xilinx_drm_readl(vtc->base, VTC_GVSHOFF);//
+	DRM_DEBUG_DRIVER("GVSHOFF: %d, %d\n", reg2 & 0xffff, (reg2 >> 16) & 0xffff);//
 }
 
 /* configure source */
@@ -345,6 +353,8 @@ static void xilinx_vtc_config_src(struct xilinx_vtc *vtc,
 		reg |= VTC_CTL_HTSS;
 
 	xilinx_drm_writel(vtc->base, VTC_CTL, reg);
+	u32 reg2 = xilinx_drm_readl(vtc->base, VTC_CTL);//
+	DRM_DEBUG_DRIVER("CTL: 0x%08x\n", reg2);//
 }
 
 /* enable vtc */
@@ -371,6 +381,7 @@ void xilinx_vtc_disable(struct xilinx_vtc *vtc)
 void xilinx_vtc_config_sig(struct xilinx_vtc *vtc,
 			   struct videomode *vm)
 {
+	DRM_DEBUG_DRIVER("Let's read VTC! (grinar)\n");//
 	u32 reg;
 	u32 htotal, hactive, hsync_start, hbackporch_start;
 	u32 vtotal, vactive, vsync_start, vbackporch_start;
@@ -379,7 +390,10 @@ void xilinx_vtc_config_sig(struct xilinx_vtc *vtc,
 	struct xilinx_vtc_src_config src;
 
 	reg = xilinx_drm_readl(vtc->base, VTC_CTL);
+	DRM_DEBUG_DRIVER("CTL before: 0x%08x\n", reg);
 	xilinx_drm_writel(vtc->base, VTC_CTL, reg & ~VTC_CTL_RU);
+	u32 reg2 = xilinx_drm_readl(vtc->base, VTC_CTL);
+	DRM_DEBUG_DRIVER("CTL after: 0x%08x\n", reg2);
 
 	htotal = vm->hactive + vm->hfront_porch + vm->hsync_len +
 		 vm->hback_porch;
@@ -400,14 +414,22 @@ void xilinx_vtc_config_sig(struct xilinx_vtc *vtc,
 
 	reg = vtotal & 0x1fff;
 	xilinx_drm_writel(vtc->base, VTC_GVSIZE, reg);
-
 	DRM_DEBUG_DRIVER("ht: %d, vt: %d\n", htotal, vtotal);
+	
+	reg2 = xilinx_drm_readl(vtc->base, VTC_GHSIZE);//
+	DRM_DEBUG_DRIVER("GHSIZE: %d\n", reg2 & 0xffff);//
+	
+	reg2 = xilinx_drm_readl(vtc->base, VTC_GVSIZE);//
+	DRM_DEBUG_DRIVER("GVSIZE: %d\n", reg2 & 0xffff);//
 
 	reg = hactive & 0x1fff;
 	reg |= (vactive & 0x1fff) << 16;
 	xilinx_drm_writel(vtc->base, VTC_GASIZE, reg);
-
+	
 	DRM_DEBUG_DRIVER("ha: %d, va: %d\n", hactive, vactive);
+	
+	reg2 = xilinx_drm_readl(vtc->base, VTC_GASIZE);//
+	DRM_DEBUG_DRIVER("GASIZE: %d, %d\n", reg2 & 0xFFFF, (reg2 >> 16) & 0xFFFF);//
 
 	reg = hsync_start & VTC_GH1_SYNCSTART_MASK;
 	reg |= (hbackporch_start << VTC_GH1_BPSTART_SHIFT) &
@@ -415,13 +437,19 @@ void xilinx_vtc_config_sig(struct xilinx_vtc *vtc,
 	xilinx_drm_writel(vtc->base, VTC_GHSYNC, reg);
 
 	DRM_DEBUG_DRIVER("hs: %d, hb: %d\n", hsync_start, hbackporch_start);
+	
+	reg2 = xilinx_drm_readl(vtc->base, VTC_GHSYNC);//
+	DRM_DEBUG_DRIVER("GHSYNC: %d, %d\n", reg2 & 0xffff, (reg2 >> 16) & 0xffff);//
 
 	reg = vsync_start & VTC_GV1_SYNCSTART_MASK;
 	reg |= (vbackporch_start << VTC_GV1_BPSTART_SHIFT) &
 	       VTC_GV1_BPSTART_MASK;
 	xilinx_drm_writel(vtc->base, VTC_GVSYNC, reg);
-
+		
 	DRM_DEBUG_DRIVER("vs: %d, vb: %d\n", vsync_start, vbackporch_start);
+	
+	reg2 = xilinx_drm_readl(vtc->base, VTC_GVSYNC);//
+	DRM_DEBUG_DRIVER("GVSYNC: %d, %d\n", reg2 & 0xffff, (reg2 >> 16) & 0xffff);//
 
 	hori_offset.vblank_hori_start = hactive;
 	hori_offset.vblank_hori_end = hactive;
@@ -455,9 +483,13 @@ void xilinx_vtc_config_sig(struct xilinx_vtc *vtc,
 	src.hfrontporch = 1;
 	src.htotal = 1;
 	xilinx_vtc_config_src(vtc, &src);
-
+	
 	reg = xilinx_drm_readl(vtc->base, VTC_CTL);
+	DRM_DEBUG_DRIVER("CTL before: 0x%08x\n", reg);
 	xilinx_drm_writel(vtc->base, VTC_CTL, reg | VTC_CTL_RU);
+	reg2 = xilinx_drm_readl(vtc->base, VTC_CTL);
+	DRM_DEBUG_DRIVER("CTL after: 0x%08x\n", reg2);	
+	
 }
 
 /* reset vtc */
